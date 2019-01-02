@@ -24,10 +24,8 @@ func TestParser(t *testing.T) {
 		Body: []types.Node{
 			types.Node{
 				NodeType: "CallExpression",
-				Value: "add",
-				Params: []Node{
-					
-				}
+				Value:    "add",
+				Params:   []Node{},
 			},
 		},
 	}
