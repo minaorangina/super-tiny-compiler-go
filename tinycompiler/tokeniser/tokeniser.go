@@ -1,30 +1,26 @@
-package tokeniser
+package tinycompiler
 
 import (
 	"errors"
 	"fmt"
 	"regexp"
+
+	"github.com/minaorangina/super-tiny-compiler/types"
 )
 
-// Token represents a unit of lisp-syntax code
-type Token struct {
-	tokenType string
-	value     string
-}
-
 // Tokeniser breaks a lisp-syntax string into its tokens
-func Tokeniser(input string) ([]Token, error) {
+func Tokeniser(input string) ([]types.Token, error) {
 	var current int
-	var tokens = []Token{}
+	var tokens = []types.Token{}
 
 	for current < len(input) {
 		inputAsRunes := []rune(input)
 		char := string(inputAsRunes[current])
 
 		if char == "(" {
-			tokens = append(tokens, Token{
-				tokenType: "paren",
-				value:     "(",
+			tokens = append(tokens, types.Token{
+				TokenType: "paren",
+				Value:     "(",
 			})
 
 			current++
@@ -32,9 +28,9 @@ func Tokeniser(input string) ([]Token, error) {
 		}
 
 		if char == ")" {
-			tokens = append(tokens, Token{
-				tokenType: "paren",
-				value:     ")",
+			tokens = append(tokens, types.Token{
+				TokenType: "paren",
+				Value:     ")",
 			})
 
 			current++
@@ -43,7 +39,7 @@ func Tokeniser(input string) ([]Token, error) {
 
 		isWhitespace, err := regexp.MatchString("\\s", char)
 		if err != nil {
-			return []Token{}, errors.New("Could not compile regex")
+			return []types.Token{}, errors.New("Could not compile regex")
 		}
 		if isWhitespace {
 			current++
@@ -52,7 +48,7 @@ func Tokeniser(input string) ([]Token, error) {
 
 		isNumber, err := regexp.MatchString("[0-9]", char)
 		if err != nil {
-			return []Token{}, errors.New("Could not compile regex")
+			return []types.Token{}, errors.New("Could not compile regex")
 		}
 		if isNumber {
 			var value string
@@ -64,9 +60,9 @@ func Tokeniser(input string) ([]Token, error) {
 				isNumber, _ = regexp.MatchString("[0-9]", char)
 			}
 
-			tokens = append(tokens, Token{
-				tokenType: "number",
-				value:     value,
+			tokens = append(tokens, types.Token{
+				TokenType: "number",
+				Value:     value,
 			})
 			continue
 		}
@@ -82,16 +78,16 @@ func Tokeniser(input string) ([]Token, error) {
 				isBetweenQuotes = char != "\""
 			}
 
-			tokens = append(tokens, Token{
-				tokenType: "string",
-				value:     value,
+			tokens = append(tokens, types.Token{
+				TokenType: "string",
+				Value:     value,
 			})
 			continue
 		}
 
 		isLetter, err := regexp.MatchString("[A-Za-z]", char)
 		if err != nil {
-			return []Token{}, errors.New("Could not compile regex")
+			return []types.Token{}, errors.New("Could not compile regex")
 		}
 		if isLetter {
 			var value string
@@ -103,14 +99,14 @@ func Tokeniser(input string) ([]Token, error) {
 				isLetter, err = regexp.MatchString("[A-Za-z]", char)
 			}
 
-			tokens = append(tokens, Token{
-				tokenType: "name",
-				value:     value,
+			tokens = append(tokens, types.Token{
+				TokenType: "name",
+				Value:     value,
 			})
 			continue
 		}
 
-		return []Token{}, fmt.Errorf("I don't know what this is: %s", char)
+		return []types.Token{}, fmt.Errorf("I don't know what this is: %s", char)
 	}
 
 	return tokens, nil
