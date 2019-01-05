@@ -1,5 +1,13 @@
 package types
 
+type NodeType int
+
+const (
+	NumberLiteral NodeType = iota
+	StringLiteral
+	CallExpression
+)
+
 // Token represents a unit of lisp-syntax code
 type Token struct {
 	TokenType string
@@ -13,7 +21,7 @@ type Ast struct {
 
 // Node is a node in an AST structure
 type Node struct {
-	NodeType string // switch over this rather than the type
+	NodeType NodeType // switch over this rather than the type
 	Value    string
 	Params   []Node
 }
